@@ -1,7 +1,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from 'axios'
+import * as Services from '../services/'
 import FormTask from '../components/FormTask.vue'
+import type { Task } from '@/types'
 
 export default defineComponent({
   props: {
@@ -12,7 +13,8 @@ export default defineComponent({
   },
   data() {
     return {
-      task: {}
+      task: {} as Task,
+      pending: false
     }
   },
   mounted() {
@@ -27,32 +29,34 @@ export default defineComponent({
   },  
   methods: {
     getTask() {
-      axios
-        .get(`http://localhost:8000/api/tasks/${this.$props.id}`)
-        .then(response => this.task = response.data )
+      this.pending = true
+      Services.getTask(this.$props.id)
+        .then(response => this.task = response.data)
         .catch(
           error => console.log({
             errorCode: error.code, errorMessage: error.message
           })
-        );
+        )
+        .finally(() => this.pending = false)
     },
-    submit(payload) {
+    submit(payload: Task) {
+      this.pending = true
       if (this.$props.id===undefined) {
-        axios
-          .post("http://localhost:8000/api/tasks", payload)
-          .then(response => (
-            this.$router.push({name: 'index'})            
-          ))
+        Services.insertTask(payload)
+          .then(response => {
+            alert(response.data.message)
+            this.$router.push({name: 'index'})
+          })
           .catch(error => console.log(error))
-          //.finally(() => this.pending = false)*/
-      } else {
-        axios
-          .put(`http://localhost:8000/api/tasks/${this.$props.id}`, payload)
-          .then(response => (
-            this.$router.push({name: 'index'})            
-          ))
+          .finally(() => this.pending = false)
+      } else {      
+        Services.updateTask(this.$props.id, payload)
+          .then(response => {
+            alert(response.data.message)
+            this.$router.push({name: 'index'})
+          })
           .catch(error => console.log(error))
-          //.finally(() => this.pending = false)*/
+          .finally(() => this.pending = false)
       }
     }  
   }
@@ -61,7 +65,8 @@ export default defineComponent({
 
 <template>
   <div class="container row col-md-6 mx-auto w-1/2">
-    <h1 class="text-2xl" align="center">
+    <h1 v-if="pending" class="text-2xl" align="center">Loading...</h1>
+    <h1 v-else class="text-2xl" align="center">
       {{$props.id ? 'Editing' : 'Creating'}} Tast
     </h1>
     <FormTask v-if="isRenderable" :task="task" @submit='submit' />
