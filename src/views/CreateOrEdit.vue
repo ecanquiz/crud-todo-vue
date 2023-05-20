@@ -82,4 +82,3 @@ export default defineComponent({
     <FormTask v-if="isRenderable" :task="task" @submit='submit' />
   </div>
 </template>
-
