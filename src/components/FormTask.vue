@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import type { Task } from '@/types'
 
 export default defineComponent({
   props: {
@@ -7,7 +8,7 @@ export default defineComponent({
   },
   data() {
     return {
-      form: this.$props.task
+      form: this.$props.task as Task
     }
   },
   emits: ['submit'],
@@ -41,4 +42,3 @@ export default defineComponent({
     </button>
   </form>
 </template>
-
