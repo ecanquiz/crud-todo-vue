@@ -1,11 +1,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
-import axios from 'axios'
+import * as Services from '../services/'
+import type { Task } from '@/types'
 
 export default defineComponent({
   data() {
     return {
-      tasks: []
+      tasks: [] as Task[],
+      pending: false
     }
   },
   mounted() {
@@ -13,28 +15,32 @@ export default defineComponent({
   },
   methods: {
     getTasks() {
-      axios
-        .get('http://localhost:8000/api/tasks')
+      this.pending = true
+      Services.getTasks()
         .then(response => this.tasks = response.data )
         .catch(
           error => console.log({
             errorCode: error.code, errorMessage: error.message
           })
-        );
+        )
+        .finally(() => this.pending = false)
     },
-    removeTask(id) {
-      axios
-        .delete(`http://localhost:8000/api/tasks/${id}`)
-        .then(response => {
-          console.log({ statusCode: response.status })
-          if (response.status===204)
-            this.getTasks();
-          })
-        .catch(
-          error => console.log({
-            errorCode: error.code, errorMessage: error.message
-          })
-        );
+    removeTask(id: string) {
+      if (confirm("Do you want to delete this task?")) {
+        this.pending = true
+        Services.removeTask(id)
+          .then(response => {
+            console.log({ statusCode: response.status })
+            if (response.status===204)
+              this.getTasks();
+            })
+          .catch(
+            error => console.log({
+              errorCode: error.code, errorMessage: error.message
+            })
+          )
+          .finally(() => this.pending = false)
+      }
     }
   }
 })
@@ -42,7 +48,8 @@ export default defineComponent({
 
 <template>
   <div class="container mx-auto">
-    <h1 class="text-2xl" align="center">ToDo List</h1>    
+    <h1 v-if="pending" class="text-2xl" align="center">Loading...</h1>
+    <h1 v-else class="text-2xl" align="center">ToDo List</h1>      
     <router-link
       :to="{name: 'create'}"
       class="btn btn-primary"
@@ -72,7 +79,7 @@ export default defineComponent({
           <td class="p-2">{{ task.done }}</td>
           <td class="p-2">{{ task.created_at }}</td>
           <td class="p-2">{{ task.updated_at }}</td>          
-          <td class="p-2">
+          <td>
             <button
               class="btn btn-success m-1 text-sm"
               @click="$router.push({name: 'edit', params: {id: task.id}})"
@@ -81,7 +88,7 @@ export default defineComponent({
             </button>
             <button
               class="btn btn-danger m-1 text-sm"
-              @click="removeTask(task.id)"
+              @click="removeTask(task.id as unknown as string)"
             >
               Delete
             </button>
