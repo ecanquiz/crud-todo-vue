@@ -1,6 +1,6 @@
 <script lang="ts">
-import { defineComponent, ref } from 'vue'
-import type { Task } from '@/types'
+import { defineComponent } from 'vue'
+import useFormTask from '../composables/useFormTask'
 
 export default defineComponent({
   props: {
@@ -8,8 +8,10 @@ export default defineComponent({
   },
   emits: ['submit'],
   setup(props, ctx) {
-    const form = ref(props.task as Task)
-    const submit = () => ctx.emit('submit', form.value )
+    const {
+      form,
+      submit
+    } = useFormTask(props, ctx)
 
     return {
       form,
