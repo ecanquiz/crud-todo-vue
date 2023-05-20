@@ -1,20 +1,19 @@
 <script lang="ts">
-import { defineComponent } from 'vue'
+import { defineComponent, ref } from 'vue'
 import type { Task } from '@/types'
 
 export default defineComponent({
   props: {
     task: Object    
   },
-  data() {
-    return {
-      form: this.$props.task as Task
-    }
-  },
   emits: ['submit'],
-  methods: {
-    submit() {          
-      this.$emit('submit', this.form )
+  setup(props, ctx) {
+    const form = ref(props.task as Task)
+    const submit = () => ctx.emit('submit', form.value )
+
+    return {
+      form,
+      submit
     }
   }
 })
