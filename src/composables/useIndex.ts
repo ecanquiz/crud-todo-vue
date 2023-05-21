@@ -42,8 +42,7 @@ export default () => {
   return {
     pending,
     tasks,
-    
-    getTasks,
+
     removeTask
   }
 }
