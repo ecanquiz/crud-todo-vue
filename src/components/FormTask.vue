@@ -1,24 +1,20 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import useFormTask from '../composables/useFormTask'
+import type { Task } from '@/types'
 
-export default defineComponent({
-  props: {
-    task: Object    
-  },
-  emits: ['submit'],
-  setup(props, ctx) {
-    const {
-      form,
-      submit
-    } = useFormTask(props, ctx)
+const props = defineProps<{
+  task: Task
+}>()
 
-    return {
-      form,
-      submit
-    }
-  }
-})
+const emit = defineEmits<{
+  (e: 'submit', form: Task): void
+}>()
+
+const {
+  form,
+
+  submit
+} = useFormTask(props, { emit })
 </script>
 
 <template>

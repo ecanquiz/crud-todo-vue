@@ -5,9 +5,7 @@ import type { Task } from '@/types'
 
 export default (props: { readonly id?: string; }) => {
   const router = useRouter()
-
   const task = ref({} as Task)
-
   const pending = ref(false)
 
   const isRenderable = computed(

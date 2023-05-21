@@ -1,24 +1,12 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import useIndex from '../composables/useIndex'
 
-export default defineComponent({
-  setup() {
-    const {
-      pending,
-      tasks,
+const {
+  pending,
+  tasks,
 
-      removeTask
-    } = useIndex()
-
-    return {
-      pending,
-      tasks,
-
-      removeTask
-    }
-  }
-})
+  removeTask
+} = useIndex()
 </script>
 
 <template>
