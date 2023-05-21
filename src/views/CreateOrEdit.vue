@@ -1,33 +1,18 @@
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
 import FormTask from '../components/FormTask.vue'
 import useCreateOrEdit from '../composables/useCreateOrEdit'
 
-export default defineComponent({
-  props: {
-    id: String
-  },
-  components: {
-    FormTask
-  },
-  setup(props) {
-    const {
-      isRenderable,
-      pending,
-      task,
-    
-      submit
-    } = useCreateOrEdit(props)
-
-    return {
-      isRenderable,
-      pending,
-      task,
-
-      submit
-    }
-  }
-})
+const props = defineProps<{
+  id?: string
+}>()
+  
+const {
+  isRenderable,
+  pending,
+  task,
+  
+  submit
+} = useCreateOrEdit(props)   
 </script>
 
 <template>
