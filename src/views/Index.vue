@@ -7,14 +7,14 @@ export default defineComponent({
     const {
       pending,
       tasks,
-    
-      getTasks,
+
       removeTask
     } = useIndex()
 
     return {
       pending,
       tasks,
+
       removeTask
     }
   }
